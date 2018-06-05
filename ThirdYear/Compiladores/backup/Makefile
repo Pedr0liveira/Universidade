@@ -3,7 +3,7 @@ CFLAGS = -g
 OUTFILE = yalang
 LIBS = -lm
 
-all: parser.c lexer.c
+all: clean parser.c lexer.c
 	$(CC) $(CFLAGS) parser.c lexer.c -o $(OUTFILE) $(LIBS)
 
 
