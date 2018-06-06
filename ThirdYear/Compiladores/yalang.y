@@ -51,9 +51,10 @@ program:	decls
 			;
 
 
-decls:		decl
-		|	decl decls
+decls:		decls			{$$ = newDecls(decl_, $1); }
+		|	decl newDecls	{$$ = newDecls(decl_decls, $1, $2); }
 			;
+
 
 decl: 		ids DPOINTS type SEMI
 		|	ids DPOINTS	type ASSIGN exp SEMI
@@ -70,8 +71,7 @@ type:		INT
 		|	VOID
 			;
 
-ids:
-			ID
+ids:		ID
 		|	ID COMMA ids
 			;
 
