@@ -6,6 +6,10 @@ Terminals unused in grammar
    DOT
 
 
+State 113 conflicts: 1 shift/reduce
+State 114 conflicts: 1 reduce/reduce
+
+
 Grammar
 
     0 $accept: program $end
@@ -40,8 +44,8 @@ Grammar
    23     | NEXT SEMI
    24     | BREAK SEMI
    25     | PRINT LPAR ids RPAR SEMI
-   26     | PRINT LPAR STRING RPAR SEMI
-   27     | PRINT LPAR ID exp RPAR SEMI
+   26     | PRINT LPAR LSTRING RPAR SEMI
+   27     | PRINT LPAR exp RPAR SEMI
    28     | INPUT LPAR ID RPAR SEMI
 
    29 argdefs: argdef
@@ -80,8 +84,8 @@ $end (0) 0
 error (256)
 INTEGER (258) 33
 FLOATER (259) 34
-LSTRING (260) 35
-ID (261) 6 7 8 15 16 18 27 28 31 32 54
+LSTRING (260) 26 35
+ID (261) 6 7 8 15 16 18 28 31 32 54
 BOOLLIT (262) 36
 ASP (263)
 LCBRACE (264) 6 7 19 20 21
@@ -94,7 +98,7 @@ DOT (270)
 DPOINTS (271) 4 5 6 7 31
 INT (272) 9
 FLOAT (273) 10
-STRING (274) 11 26
+STRING (274) 11
 BOOL (275) 12
 VOID (276) 14
 DEFINE (277) 8
@@ -1177,8 +1181,8 @@ State 76
 State 77
 
    25 stms: PRINT . LPAR ids RPAR SEMI
-   26     | PRINT . LPAR STRING RPAR SEMI
-   27     | PRINT . LPAR ID exp RPAR SEMI
+   26     | PRINT . LPAR LSTRING RPAR SEMI
+   27     | PRINT . LPAR exp RPAR SEMI
 
     LPAR  shift, and go to state 104
 
@@ -1814,34 +1818,42 @@ State 103
 State 104
 
    25 stms: PRINT LPAR . ids RPAR SEMI
-   26     | PRINT LPAR . STRING RPAR SEMI
-   27     | PRINT LPAR . ID exp RPAR SEMI
+   26     | PRINT LPAR . LSTRING RPAR SEMI
+   27     | PRINT LPAR . exp RPAR SEMI
 
-    ID      shift, and go to state 113
-    STRING  shift, and go to state 114
+    INTEGER  shift, and go to state 38
+    FLOATER  shift, and go to state 39
+    LSTRING  shift, and go to state 113
+    ID       shift, and go to state 114
+    BOOLLIT  shift, and go to state 42
+    LPAR     shift, and go to state 43
+    NOT      shift, and go to state 44
+    SUB      shift, and go to state 45
+    MOD      shift, and go to state 46
 
     ids  go to state 115
+    exp  go to state 116
 
 
 State 105
 
    28 stms: INPUT LPAR . ID RPAR SEMI
 
-    ID  shift, and go to state 116
+    ID  shift, and go to state 117
 
 
 State 106
 
     6 decl: ID LPAR RPAR DPOINTS type LCBRACE stms RCBRACE . SEMI
 
-    SEMI  shift, and go to state 117
+    SEMI  shift, and go to state 118
 
 
 State 107
 
     7 decl: ID LPAR argdefs RPAR DPOINTS type LCBRACE stms . RCBRACE SEMI
 
-    RCBRACE  shift, and go to state 118
+    RCBRACE  shift, and go to state 119
 
 
 State 108
@@ -1868,14 +1880,14 @@ State 110
    19 stms: IF exp THEN . LCBRACE stms RCBRACE SEMI
    20     | IF exp THEN . LCBRACE stms RCBRACE ELSE LCBRACE stms RCBRACE SEMI
 
-    LCBRACE  shift, and go to state 119
+    LCBRACE  shift, and go to state 120
 
 
 State 111
 
    21 stms: WHILE exp DO . LCBRACE stms RCBRACE SEMI
 
-    LCBRACE  shift, and go to state 120
+    LCBRACE  shift, and go to state 121
 
 
 State 112
@@ -1887,31 +1899,28 @@ State 112
 
 State 113
 
-   15 ids: ID .
-   16    | ID . COMMA ids
-   27 stms: PRINT LPAR ID . exp RPAR SEMI
+   26 stms: PRINT LPAR LSTRING . RPAR SEMI
+   35 exp: LSTRING .
 
-    INTEGER  shift, and go to state 38
-    FLOATER  shift, and go to state 39
-    LSTRING  shift, and go to state 40
-    ID       shift, and go to state 41
-    BOOLLIT  shift, and go to state 42
-    LPAR     shift, and go to state 43
-    COMMA    shift, and go to state 8
-    NOT      shift, and go to state 44
-    SUB      shift, and go to state 45
-    MOD      shift, and go to state 46
+    RPAR  shift, and go to state 122
 
-    $default  reduce using rule 15 (ids)
-
-    exp  go to state 121
+    RPAR      [reduce using rule 35 (exp)]
+    $default  reduce using rule 35 (exp)
 
 
 State 114
 
-   26 stms: PRINT LPAR STRING . RPAR SEMI
+   15 ids: ID .
+   16    | ID . COMMA ids
+   32 exp: ID .
+   54    | ID . ASSIGN exp
 
-    RPAR  shift, and go to state 122
+    ASSIGN  shift, and go to state 51
+    COMMA   shift, and go to state 8
+
+    RPAR      reduce using rule 15 (ids)
+    RPAR      [reduce using rule 32 (exp)]
+    $default  reduce using rule 32 (exp)
 
 
 State 115
@@ -1923,49 +1932,62 @@ State 115
 
 State 116
 
-   28 stms: INPUT LPAR ID . RPAR SEMI
+   27 stms: PRINT LPAR exp . RPAR SEMI
+   37 exp: exp . ADD exp
+   38    | exp . SUB exp
+   39    | exp . MUL exp
+   40    | exp . DIV exp
+   41    | exp . POW exp
+   43    | exp . AND exp
+   44    | exp . OR exp
+   45    | exp . EQUALS exp
+   46    | exp . NOTEQU exp
+   47    | exp . LESS exp
+   48    | exp . BIGGER exp
+   49    | exp . LESSEQU exp
+   50    | exp . BIGGEREQU exp
 
-    RPAR  shift, and go to state 124
+    RPAR       shift, and go to state 124
+    OR         shift, and go to state 57
+    AND        shift, and go to state 58
+    EQUALS     shift, and go to state 59
+    LESS       shift, and go to state 60
+    BIGGER     shift, and go to state 61
+    LESSEQU    shift, and go to state 62
+    BIGGEREQU  shift, and go to state 63
+    NOTEQU     shift, and go to state 64
+    ADD        shift, and go to state 65
+    SUB        shift, and go to state 66
+    DIV        shift, and go to state 67
+    MUL        shift, and go to state 68
+    POW        shift, and go to state 69
 
 
 State 117
+
+   28 stms: INPUT LPAR ID . RPAR SEMI
+
+    RPAR  shift, and go to state 125
+
+
+State 118
 
     6 decl: ID LPAR RPAR DPOINTS type LCBRACE stms RCBRACE SEMI .
 
     $default  reduce using rule 6 (decl)
 
 
-State 118
+State 119
 
     7 decl: ID LPAR argdefs RPAR DPOINTS type LCBRACE stms RCBRACE . SEMI
 
-    SEMI  shift, and go to state 125
-
-
-State 119
-
-   19 stms: IF exp THEN LCBRACE . stms RCBRACE SEMI
-   20     | IF exp THEN LCBRACE . stms RCBRACE ELSE LCBRACE stms RCBRACE SEMI
-
-    ID      shift, and go to state 71
-    DEFINE  shift, and go to state 2
-    IF      shift, and go to state 72
-    WHILE   shift, and go to state 73
-    RETURN  shift, and go to state 74
-    BREAK   shift, and go to state 75
-    NEXT    shift, and go to state 76
-    PRINT   shift, and go to state 77
-    INPUT   shift, and go to state 78
-
-    decls  go to state 79
-    decl   go to state 5
-    ids    go to state 6
-    stms   go to state 126
+    SEMI  shift, and go to state 126
 
 
 State 120
 
-   21 stms: WHILE exp DO LCBRACE . stms RCBRACE SEMI
+   19 stms: IF exp THEN LCBRACE . stms RCBRACE SEMI
+   20     | IF exp THEN LCBRACE . stms RCBRACE ELSE LCBRACE stms RCBRACE SEMI
 
     ID      shift, and go to state 71
     DEFINE  shift, and go to state 2
@@ -1985,40 +2007,27 @@ State 120
 
 State 121
 
-   27 stms: PRINT LPAR ID exp . RPAR SEMI
-   37 exp: exp . ADD exp
-   38    | exp . SUB exp
-   39    | exp . MUL exp
-   40    | exp . DIV exp
-   41    | exp . POW exp
-   43    | exp . AND exp
-   44    | exp . OR exp
-   45    | exp . EQUALS exp
-   46    | exp . NOTEQU exp
-   47    | exp . LESS exp
-   48    | exp . BIGGER exp
-   49    | exp . LESSEQU exp
-   50    | exp . BIGGEREQU exp
+   21 stms: WHILE exp DO LCBRACE . stms RCBRACE SEMI
 
-    RPAR       shift, and go to state 128
-    OR         shift, and go to state 57
-    AND        shift, and go to state 58
-    EQUALS     shift, and go to state 59
-    LESS       shift, and go to state 60
-    BIGGER     shift, and go to state 61
-    LESSEQU    shift, and go to state 62
-    BIGGEREQU  shift, and go to state 63
-    NOTEQU     shift, and go to state 64
-    ADD        shift, and go to state 65
-    SUB        shift, and go to state 66
-    DIV        shift, and go to state 67
-    MUL        shift, and go to state 68
-    POW        shift, and go to state 69
+    ID      shift, and go to state 71
+    DEFINE  shift, and go to state 2
+    IF      shift, and go to state 72
+    WHILE   shift, and go to state 73
+    RETURN  shift, and go to state 74
+    BREAK   shift, and go to state 75
+    NEXT    shift, and go to state 76
+    PRINT   shift, and go to state 77
+    INPUT   shift, and go to state 78
+
+    decls  go to state 79
+    decl   go to state 5
+    ids    go to state 6
+    stms   go to state 128
 
 
 State 122
 
-   26 stms: PRINT LPAR STRING RPAR . SEMI
+   26 stms: PRINT LPAR LSTRING RPAR . SEMI
 
     SEMI  shift, and go to state 129
 
@@ -2032,43 +2041,43 @@ State 123
 
 State 124
 
-   28 stms: INPUT LPAR ID RPAR . SEMI
+   27 stms: PRINT LPAR exp RPAR . SEMI
 
     SEMI  shift, and go to state 131
 
 
 State 125
 
+   28 stms: INPUT LPAR ID RPAR . SEMI
+
+    SEMI  shift, and go to state 132
+
+
+State 126
+
     7 decl: ID LPAR argdefs RPAR DPOINTS type LCBRACE stms RCBRACE SEMI .
 
     $default  reduce using rule 7 (decl)
 
 
-State 126
+State 127
 
    19 stms: IF exp THEN LCBRACE stms . RCBRACE SEMI
    20     | IF exp THEN LCBRACE stms . RCBRACE ELSE LCBRACE stms RCBRACE SEMI
-
-    RCBRACE  shift, and go to state 132
-
-
-State 127
-
-   21 stms: WHILE exp DO LCBRACE stms . RCBRACE SEMI
 
     RCBRACE  shift, and go to state 133
 
 
 State 128
 
-   27 stms: PRINT LPAR ID exp RPAR . SEMI
+   21 stms: WHILE exp DO LCBRACE stms . RCBRACE SEMI
 
-    SEMI  shift, and go to state 134
+    RCBRACE  shift, and go to state 134
 
 
 State 129
 
-   26 stms: PRINT LPAR STRING RPAR SEMI .
+   26 stms: PRINT LPAR LSTRING RPAR SEMI .
 
     $default  reduce using rule 26 (stms)
 
@@ -2082,12 +2091,19 @@ State 130
 
 State 131
 
+   27 stms: PRINT LPAR exp RPAR SEMI .
+
+    $default  reduce using rule 27 (stms)
+
+
+State 132
+
    28 stms: INPUT LPAR ID RPAR SEMI .
 
     $default  reduce using rule 28 (stms)
 
 
-State 132
+State 133
 
    19 stms: IF exp THEN LCBRACE stms RCBRACE . SEMI
    20     | IF exp THEN LCBRACE stms RCBRACE . ELSE LCBRACE stms RCBRACE SEMI
@@ -2096,18 +2112,11 @@ State 132
     SEMI  shift, and go to state 136
 
 
-State 133
+State 134
 
    21 stms: WHILE exp DO LCBRACE stms RCBRACE . SEMI
 
     SEMI  shift, and go to state 137
-
-
-State 134
-
-   27 stms: PRINT LPAR ID exp RPAR SEMI .
-
-    $default  reduce using rule 27 (stms)
 
 
 State 135

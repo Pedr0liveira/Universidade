@@ -159,7 +159,16 @@ union YYSTYPE
 	char *id;
 	int boolean;
 
-#line 163 "parser.h" /* yacc.c:1909  */
+	struct decls *decls;
+	struct decl *decl;
+	struct type *type;
+	struct ids *ids;
+	struct stms *stms;
+	struct argdefs *argdefs;
+	struct argdef *argdef;
+	struct exp *exp;
+
+#line 172 "parser.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
