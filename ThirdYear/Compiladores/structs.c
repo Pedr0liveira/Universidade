@@ -220,22 +220,138 @@ stms *stmsPrintString(stmsKind kind, char *string)
 	return new_;
 }
 
-stms *stmsPrintExp(stmsKind kind, char *identifier, exp *expression2);
-stms *stmsInput(stmsKind kind, char *identifier);
+stms *stmsPrintExp(stmsKind kind, char *identifier, exp *expression2)
+{
+	smts *new_ = malloc(sizeof(stms));
+
+	new_ -> kind = kind;
+	new_ -> u1.expression1 = expression1;
+
+	return new_;
+}
+
+stms *stmsInput(stmsKind kind, char *identifier)
+{
+	stms *new_ = malloc(sizeof(stms));
+
+	new_ -> kind = kind; 
+	new_ -> u1.identifier = strdup(identifier);
+
+	return new_;
+}
 
 //função para várias definições de argumentos.
-argdefs *argdefsArgdef(argdefsKind kind, argdef *argDefine);
-argdefs *argdefsArgdefs(argdefsKind kins, argdef *argDefine, argdefs *argDefines);
+argdefs *argdefsArgdef(argdefsKind kind, argdef *argDefine)
+{
+	argdefs *new_ = malloc(sizeof(argdefs));
+
+	new_ -> kind = kind;
+	new_ -> argDefine = argDefine;
+
+	return new_;
+}
+
+argdefs *argdefsArgdefs(argdefsKind kins, argdef *argDefine, argdefs *argDefines)
+{
+	argdefs *new_ = malloc(sizeof(argdefs));
+
+	new_ -> kind = kind;
+	new_ -> argDefine = argDefine;
+	new_ -> argDefines = argDefines;
+
+	return new_;
+}
 
 //função para definição de argumentos.
-argdef *argdef(char *identifier, type *types);
+argdef *argdef(char *identifier, type *types)
+{
+	argdef *new_ = malloc(sizeof(argdef));
+
+	new_ -> identifier = strdup(identifier);
+	new_ -> types = types;
+
+	return new_;
+}
 
 //funções para Expressions.
-exp *expID(expKind kind, char *identifier);
-exp *expInt(expKind kind, int integer);
-exp *expFloater(expKind kind, float floater);
-exp *expString(expKind kind, char *identifier);
-exp *expBool(expKind kind, bool boolean);
-exp *expOp(expKind kind, exp *expression1, exp *expression2);
-exp *expSingle(expKind kind, exp *expression1);
-exp *expAssign(expKind kind, char *identifier, exp *expression2);
+exp *expID(expKind kind, char *identifier)
+{
+	exp *new_ =malloc(sizeof(exp));
+
+	new_ -> kind = kind;
+	new_ -> u1.identifier = strdup(identifier);
+
+	return new_;
+}
+
+exp *expInt(expKind kind, int integer)
+{
+	exp *new_ = malloc(sizeof(exp));
+
+	new_ -> kind = kind;
+	new_ -> u1.integer = integer;
+
+	return new_;
+}
+
+exp *expFloater(expKind kind, float floater)
+{
+	exp *new_ = malloc(sizeof(exp));
+
+	new_ -> kind = kind;
+	new_ -> u1.floater = floater;
+
+	return new_;
+}
+
+exp *expString(expKind kind, char *identifier)
+{
+	exp *new_ = malloc(sizeof(exp));
+
+	new_ -> kind = kind;
+	new_ -> u1.identifier = strdup(identifier);
+
+	return new_;
+}
+
+exp *expBool(expKind kind, int boolean)
+{
+	exp * new_ = malloc(sizeof(exp));
+
+	new_ -> kind = kind;
+	new_ -> u1.boolean = boolean;
+
+	return new_;
+}
+
+exp *expOp(expKind kind, exp *expression1, exp *expression2)
+{
+	exp *new_ = malloc(sizeof(exp));
+
+	new_ -> kind = kind;
+	new_ -> u1.expression1 = expression1;
+	new_ -> expression2 = expression2;
+
+	return new_;
+}
+
+exp *expSingle(expKind kind, exp *expression1)
+{
+	exp *new_ = malloc(sizeof(exp));
+
+	new_ -> kind = kind;
+	new_ -> u1.expression1 = expression1;
+
+	return new_;
+}
+
+exp *expAssign(expKind kind, char *identifier, exp *expression2)
+{
+	exp *new_ = malloc(sizeof(exp));
+
+	new_ -> kind = kind;
+	new_ -> u1.identifier = strdup(identifier);
+	new_ -> expression2 = expression2;
+
+	return new_;
+}

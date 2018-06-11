@@ -150,7 +150,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 10 "yalang.y" /* yacc.c:1909  */
+#line 11 "yalang.y" /* yacc.c:1909  */
 
 	
 	int integer;

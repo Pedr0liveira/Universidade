@@ -5,7 +5,7 @@
 typedef enum declsKind {decl_, declDecls_} declsKind;
 typedef enum declKind {declNoArgs_, declExp_, declStms_, declArgdef_, declDefine_} declKind;
 typedef enum typeKind {int_, float_, string_, bool_, void_, typeExp_} typeKind;
-typedef enum typeIds {idsId_, idsIdIds_} typeIds;
+typedef enum idsKind {idsId_, idsIdIds_} idsKind;
 typedef enum stmsKind {stmsDecls_, stmsIdExp_, stmsIf_, stmsIfElse_, stmsWhile_, stmsReturn_, stmsNext_, stmsBreak_, stmsPrintIds_, stmsPrintString_, stmsPrintExp_, stmsInput_} stmsKind;
 typedef enum argdefsKind {argdef_, argdefs_} argdefsKind;
 typedef enum expKind {expID_, expInt_, expFloater_, expString_, expBool_, expSum_, expSub_, expMul_, expDiv_, expPow_, expMod_, expAnd_, expOr_, expEquals_, expNotEqu_, expLess_, expBigger_, expLessEqu_, expBiggerEqu_, expNot_, expNeg_, expPar_, expAssign_} expKind;
@@ -17,6 +17,7 @@ typedef struct type type;
 typedef struct ids ids;
 typedef struct stms stms;
 typedef struct argdefs argdefs;
+typedef struct argdef argdef;
 typedef struct exp exp;
 
 
@@ -117,13 +118,14 @@ struct argdef
 struct exp
 {
 	expKind kind;
+
 	union
 	{
 		char *identifier;
 		int integer;
 		float floater;
 		char *string;
-		bool boolean;
+		int boolean;
 		exp *expression1;
 	}u1;
 
@@ -162,7 +164,7 @@ stms *stmsReturn(stmsKind kind, exp *expression1);
 stms *stmsSingle(stmsKind kind);
 stms *stmsPrintIds(stmsKind kind, ids *id);
 stms *stmsPrintString(stmsKind kind, char *string);
-stms *stmsPrintExp(stmsKind kind, char *identifier, exp *expression2);
+stms *stmsPrintExp(stmsKind kind, exp *expression1);
 stms *stmsInput(stmsKind kind, char *identifier);
 
 //função para várias definições de argumentos.
@@ -170,14 +172,14 @@ argdefs *argdefsArgdef(argdefsKind kind, argdef *argDefine);
 argdefs *argdefsArgdefs(argdefsKind kins, argdef *argDefine, argdefs *argDefines);
 
 //função para definição de argumentos.
-argdef *argdef(char *identifier, type *types);
+argdef *newArgdef(char *identifier, type *types);
 
 //funções para Expressions.
 exp *expID(expKind kind, char *identifier);
 exp *expInt(expKind kind, int integer);
 exp *expFloater(expKind kind, float floater);
 exp *expString(expKind kind, char *identifier);
-exp *expBool(expKind kind, bool boolean);
+exp *expBool(expKind kind, int boolean);
 exp *expOp(expKind kind, exp *expression1, exp *expression2);
 exp *expSingle(expKind kind, exp *expression1);
 exp *expAssign(expKind kind, char *identifier, exp *expression2);

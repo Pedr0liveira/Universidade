@@ -1,6 +1,7 @@
 %{
 	#include <stdio.h>
 	#include <string.h>
+	#include "structs.h"
 
 	int yylex(void);
 	void yyerror(const char *);
@@ -77,7 +78,7 @@ decl: 		ids DPOINTS type SEMI		{$$ = newDeclType(declNoArgs_, $1, $3); }
 		|	ids DPOINTS	type ASSIGN exp SEMI	{$$ = newDeclExp(declExp_, $1, $3, $5); }
 		|	ID LPAR RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclStms(declStms_, $1, $5, $7); }
 		|	ID LPAR argdefs RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclArgdefs(declArgdef_, $1, $3, $6, $8); }
-		|	DEFINE ID type	SEMI	{$$ = newDeclDefine(declDefini_, $2, $3); }
+		|	DEFINE ID type	SEMI	{$$ = newDeclDefine(declDefine_, $2, $3); }
 			;
 
 type:		INT 	{$$ = newTypeTypes(int_); }
@@ -88,11 +89,11 @@ type:		INT 	{$$ = newTypeTypes(int_); }
 		|	VOID 	{$$ = newTypeTypes(void_); }
 			;
 
-ids:		ID 		{$$ = newId(idsId_); }
+ids:		ID 		{$$ = newId(idsId_, $1); }
 		|	ID COMMA ids 	{$$ = newIdIds(idsIdIds_, $1, $3); }
 			;
 
-stms:		decls 			{$$ = stmsDecls(stmsDecl_, $1); }
+stms:		decls 			{$$ = stmsDecls(stmsDecls_, $1); }
 		|	ID exp SEMI		{$$ = stmsIdExp(stmsIdExp_, $1, $2); }
 		|	IF exp THEN LCBRACE stms RCBRACE SEMI		{$$ = stmsIf(stmsIf_, $2, $5); }
 		|	IF exp THEN LCBRACE stms RCBRACE ELSE LCBRACE stms RCBRACE SEMI		{$$ = stmsIfElse(stmsIfElse_, $2, $5, $9); }
@@ -103,14 +104,14 @@ stms:		decls 			{$$ = stmsDecls(stmsDecl_, $1); }
 		|	PRINT LPAR ids RPAR SEMI		{$$ = stmsPrintIds(stmsPrintIds_, $3); }
 		|	PRINT LPAR LSTRING RPAR SEMI		{$$ = stmsPrintString(stmsPrintString_, $3); }
 		|	PRINT LPAR exp RPAR SEMI		{$$ = stmsPrintExp(stmsPrintExp_, $3); }
-		|	INPUT LPAR ID RPAR SEMI			{$$ = stmsInput(stmsPrintInput_, $3); }
+		|	INPUT LPAR ID RPAR SEMI			{$$ = stmsInput(stmsInput_, $3); }
 			;
 
 argdefs:	argdef 					{$$ = argdefsArgdef(argdef_, $1); }
 		|	argdef COMMA argdefs 	{$$ = argdefsArgdefs(argdefs_,  $1, $3); }
 			;
 
-argdef:		ID DPOINTS type 		{$$ = argdef($1, $3); }
+argdef:		ID DPOINTS type 		{$$ = newArgdef($1, $3); }
 			;
 
 exp:		ID 					{$$ = expID(expID_, $1); }
@@ -130,7 +131,7 @@ exp:		ID 					{$$ = expID(expID_, $1); }
 		|	exp OR exp 			{$$ = expOp(expOr_, $1, $3); }
 
 		|	exp EQUALS exp 		{$$ = expOp(expEquals_, $1, $3); }
-		|	exp NOTEQU exp 		{$$ = expOp(expNotEquals_, $1, $3); }
+		|	exp NOTEQU exp 		{$$ = expOp(expNotEqu_, $1, $3); }
 
 		|	exp LESS exp 		{$$ = expOp(expLess_, $1, $3); }
 		|	exp BIGGER exp 		{$$ = expOp(expBigger_, $1, $3); }
@@ -141,7 +142,7 @@ exp:		ID 					{$$ = expID(expID_, $1); }
 		|	SUB exp 			{$$ = expSingle(expNeg_, $2); }
 
 		|	LPAR exp RPAR 		{$$ = expSingle(expPar_, $2); }
-		|	ID ASSIGN exp  		{$$ = expAssing(expAssing_, $1, $3); }
+		|	ID ASSIGN exp  		{$$ = expAssing(expAssign_, $1, $3); }
 			;
 
 %%
