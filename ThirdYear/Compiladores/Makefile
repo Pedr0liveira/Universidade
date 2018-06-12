@@ -4,7 +4,7 @@ OUTFILE = yalang
 LIBS = -lm
 
 all: clean parser.c lexer.c
-	$(CC) $(CFLAGS) parser.c lexer.c -o $(OUTFILE) $(LIBS)
+	$(CC) $(CFLAGS) parser.c lexer.c structs.c -o $(OUTFILE) $(LIBS)
 
 
 parser.c: yalang.y
@@ -15,7 +15,7 @@ lexer.c: yalang.lex
 
 
 clean:
-	rm -rf parser.c lexer.c
+	rm -rf parser.c lexer.c parser.h parser.output
 	rm -f *~
 	rm -f *.o
 	rm -f yalang

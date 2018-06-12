@@ -142,7 +142,7 @@ exp:		ID 					{$$ = expID(expID_, $1); }
 		|	SUB exp 			{$$ = expSingle(expNeg_, $2); }
 
 		|	LPAR exp RPAR 		{$$ = expSingle(expPar_, $2); }
-		|	ID ASSIGN exp  		{$$ = expAssing(expAssign_, $1, $3); }
+		|	ID ASSIGN exp		{$$ = expAssign(expAssign_, $1, $3); }
 			;
 
 %%

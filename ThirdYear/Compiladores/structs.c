@@ -165,7 +165,7 @@ stms *stmsIfElse(stmsKind kind, exp *expression1, stms *statements1, stms *state
 	new_ -> kind = kind;
 	new_ -> u1.expression1 = expression1;
 	new_ -> u2.statements1 = statements1;
-	new_ -> u3.statements2 = statements2;
+	new_ -> statements2 = statements2;
 
 	return new_;
 }
@@ -202,7 +202,7 @@ stms *stmsSingle(stmsKind kind)
 
 stms *stmsPrintIds(stmsKind kind, ids *id)
 {
-	stms *new_ = malloc(sizeof(smts));
+	stms *new_ = malloc(sizeof(stms));
 
 	new_ -> kind = kind;
 	new_ -> u1.id = id;
@@ -220,9 +220,9 @@ stms *stmsPrintString(stmsKind kind, char *string)
 	return new_;
 }
 
-stms *stmsPrintExp(stmsKind kind, char *identifier, exp *expression2)
+stms *stmsPrintExp(stmsKind kind, exp *expression1)
 {
-	smts *new_ = malloc(sizeof(stms));
+	stms *new_ = malloc(sizeof(stms));
 
 	new_ -> kind = kind;
 	new_ -> u1.expression1 = expression1;
@@ -251,7 +251,7 @@ argdefs *argdefsArgdef(argdefsKind kind, argdef *argDefine)
 	return new_;
 }
 
-argdefs *argdefsArgdefs(argdefsKind kins, argdef *argDefine, argdefs *argDefines)
+argdefs *argdefsArgdefs(argdefsKind kind, argdef *argDefine, argdefs *argDefines)
 {
 	argdefs *new_ = malloc(sizeof(argdefs));
 
@@ -263,7 +263,7 @@ argdefs *argdefsArgdefs(argdefsKind kins, argdef *argDefine, argdefs *argDefines
 }
 
 //função para definição de argumentos.
-argdef *argdef(char *identifier, type *types)
+argdef *newArgdef(char *identifier, type *types)
 {
 	argdef *new_ = malloc(sizeof(argdef));
 

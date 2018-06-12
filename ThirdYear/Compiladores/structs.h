@@ -33,7 +33,6 @@ struct decls
 	decls *declarations;
 };
 
-
 struct decl
 {
 	declKind kind;
@@ -95,7 +94,7 @@ struct stms
 	union
 	{
 		exp *expression2;
-		stms *statments1;
+		stms *statements1;
 	}u2;
 
 	stms *statements2;
