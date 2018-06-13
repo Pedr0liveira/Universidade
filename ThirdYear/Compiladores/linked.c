@@ -1,5 +1,7 @@
 #include "linked.h"
 
+char *LastFunc;
+
 //djb2
 unsigned long hashFunc(char *str)
 {
@@ -27,6 +29,7 @@ void createNode(char *name, type *type, symbolTable *symbolTable)
 	strcpy(symbolTable -> array[hash].name, name);
 	symbolTable -> array[hash].type = type;
 	symbolTable -> array[hash].next = NULL;
+	strcpy(LastFunc, name);
 }
 
 //Pesquisa pela linked list referente a cada função.
