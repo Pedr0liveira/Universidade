@@ -1,12 +1,12 @@
 %{
 	#include <stdio.h>
 	#include <string.h>
-	#include "structs.h"
-	#include "linked.h"
+	#include "ini.h"
 
 	int yylex(void);
 	void yyerror(const char *);
 	char *lastFunc;
+	struct hashTable *st;
 
 %}
 
@@ -26,7 +26,6 @@
 	struct argdefs *argdefs;
 	struct argdef *argdef;
 	struct exp *exp;
-	struct hashTable *symbolTable = initialize();
 
 }
 
@@ -69,20 +68,18 @@
 
 %%
 
-program:	decls 			{newProgram($1, symbolTable); }
+program:	decls 			{st = newST(); newProgram($1, st); }
 			;
-
 
 decls:		decl			{$$ = newDecls(decl_, $1); }
 		|	decl decls		{$$ = newDeclDecls(declDecls_, $1, $2); }
 			;
 
-
-decl: 		ids DPOINTS type SEMI		{$$ = newDeclType(declNoArgs_, $1, $3); }
-		|	ids DPOINTS	type ASSIGN exp SEMI	{$$ = newDeclExp(declExp_, $1, $3, $5); createNode(symbolTable, $1, $3); }
-		|	ID LPAR RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclStms(declStms_, $1, $5, $7); }
-		|	ID LPAR argdefs RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclArgdefs(declArgdef_, $1, $3, $6, $8); createNode(symbolTable, $1, $6); }
-		|	DEFINE ID type	SEMI	{$$ = newDeclDefine(declDefine_, $2, $3); createNode(symbolTable, $2, $3); }
+decl: 		ids DPOINTS type SEMI		{$$ = newDeclType(declNoArgs_, $1, $3); createNodeIds($1, $3, st); }
+		|	ids DPOINTS	type ASSIGN exp SEMI	{$$ = newDeclExp(declExp_, $1, $3, $5); createNodeIds($1, $3, st); }
+		|	ID LPAR RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclStms(declStms_, $1, $5, $7); createNode( $1, $5, st); strcpy(lastFunc, $1); }
+		|	ID LPAR argdefs RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclArgdefs(declArgdef_, $1, $3, $6, $8); createNode($1, $6, st); strcpy(lastFunc, $1); }
+		|	DEFINE ID type	SEMI	{$$ = newDeclDefine(declDefine_, $2, $3); createNode($2, $3, st); }
 			;
 
 type:		INT 	{$$ = newTypeTypes(int_); }
@@ -93,8 +90,8 @@ type:		INT 	{$$ = newTypeTypes(int_); }
 		|	VOID 	{$$ = newTypeTypes(void_); }
 			;
 
-ids:		ID 		{$$ = newId(idsId_, $1); createNode(symbolTable, $1, $3); strcpy(lastFunc, $1); }
-		|	ID COMMA ids 	{$$ = newIdIds(idsIdIds_, $1, $3); createNode(symbolTable, $1, $5); }
+ids:		ID 		{$$ = newId(idsId_, $1); }
+		|	ID COMMA ids 	{$$ = newIdIds(idsIdIds_, $1, $3); }
 			;
 
 stms:		decls 			{$$ = stmsDecls(stmsDecls_, $1); }
@@ -111,11 +108,11 @@ stms:		decls 			{$$ = stmsDecls(stmsDecls_, $1); }
 		|	INPUT LPAR ID RPAR SEMI			{$$ = stmsInput(stmsInput_, $3); }
 			;
 
-argdefs:	argdef 					{$$ = argdefsArgdef(argdef_, $1); addNode()}
+argdefs:	argdef 					{$$ = argdefsArgdef(argdef_, $1); }
 		|	argdef COMMA argdefs 	{$$ = argdefsArgdefs(argdefs_,  $1, $3); }
 			;
 
-argdef:		ID DPOINTS type 		{$$ = newArgdef($1, $3); }
+argdef:		ID DPOINTS type 		{$$ = newArgdef($1, $3); addNode($1, $3, lastFunc, st); }
 			;
 
 exp:		ID 					{$$ = expID(expID_, $1); }
@@ -150,7 +147,6 @@ exp:		ID 					{$$ = expID(expID_, $1); }
 			;
 
 %%
-
 
 void yyerror(const char *msg)
 {

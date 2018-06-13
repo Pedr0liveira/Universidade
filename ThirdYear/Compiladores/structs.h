@@ -131,8 +131,6 @@ struct exp
 	exp *expression2;
 };
 
-//função inicial.
-program *newProgram(decls *declarations);
 
 //funções para declarações múltiplas.
 decls *newDecls(declsKind kind, decl *declaration);

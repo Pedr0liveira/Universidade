@@ -19,6 +19,7 @@ unsigned long hashFunc(char *str)
 //Cria o primeiro nó da linked list na hashtable.
 void createNode(char *name, type *type, symbolTable *symbolTable)
 {
+	printf("%lu\n", hashFunc(name)%symbolTable->size);
 	int hash = ((hashFunc(name) % symbolTable -> size));
 	while(strcmp(symbolTable -> array[hash].name, "") != 0)
 	{
@@ -27,9 +28,19 @@ void createNode(char *name, type *type, symbolTable *symbolTable)
 	}
 
 	strcpy(symbolTable -> array[hash].name, name);
-	symbolTable -> array[hash].type = type;
+	symbolTable -> array[hash].type = type -> types;
 	symbolTable -> array[hash].next = NULL;
-	strcpy(LastFunc, name);
+}
+
+void createNodeIds(ids *id, type *type, symbolTable *symbolTable)
+{
+	ids *temp = id; 
+	createNode(temp -> identifier, type, symbolTable);
+	while((temp = temp -> id) != NULL)
+	{
+		createNode(temp -> identifier, type, symbolTable);
+	}
+	
 }
 
 //Pesquisa pela linked list referente a cada função.
@@ -69,18 +80,18 @@ void addNode(char *name, type *type, char *nameFunc, symbolTable *symbolTable)
 }
 
 //Inicializa a hash table.
-symbolTable *initialize()
+symbolTable *newST()
 {
-	symbolTable *symbolTable = malloc(sizeof(symbolTable));
+	symbolTable *st = malloc(sizeof(symbolTable));
 
-	symbolTable -> size = 1009;
-	symbolTable -> array = calloc(1009, sizeof(node));
+	st -> size = 1009;
+	st -> array = calloc(1009, sizeof(node));
 
-	for(int i = 0; i < symbolTable -> size; i++)
+	for(int i = 0; i < st -> size; i++)
 	{
-		symbolTable -> array[i].name = "";
+		st -> array[i].name = "";
 
 	}
 
-	return symbolTable;
+	return st;
 }
