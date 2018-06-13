@@ -68,7 +68,7 @@
 
 %%
 
-program:	decls 			{newProgram($1); }
+program:	decls 			{newProgram($1, symbolTable); }
 			;
 
 
@@ -77,10 +77,10 @@ decls:		decl			{$$ = newDecls(decl_, $1); }
 			;
 
 
-decl: 		ids DPOINTS type SEMI		{$$ = newDeclType(declNoArgs_, $1, $3); }
-		|	ids DPOINTS	type ASSIGN exp SEMI	{$$ = newDeclExp(declExp_, $1, $3, $5); }
-		|	ID LPAR RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclStms(declStms_, $1, $5, $7); }
-		|	ID LPAR argdefs RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclArgdefs(declArgdef_, $1, $3, $6, $8); }
+decl: 		ids DPOINTS type SEMI		{$$ = newDeclType(declNoArgs_, $1, $3); createNode(symbolTable, $1, $3); }
+		|	ids DPOINTS	type ASSIGN exp SEMI	{$$ = newDeclExp(declExp_, $1, $3, $5); createNode(symbolTable, $1, $3); }
+		|	ID LPAR RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclStms(declStms_, $1, $5, $7); createNode(symbolTable, $1, $5); }
+		|	ID LPAR argdefs RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclArgdefs(declArgdef_, $1, $3, $6, $8); createNode(symbolTable, $1, $6); }
 		|	DEFINE ID type	SEMI	{$$ = newDeclDefine(declDefine_, $2, $3); }
 			;
 

@@ -15,7 +15,7 @@ unsigned long hashFunc(char *str)
 }
 
 //Cria o primeiro nó da linked list na hashtable.
-void createNode(char *name, tipo type, symbolTable *symbolTable)
+void createNode(char *name, type *type, symbolTable *symbolTable)
 {
 	int hash = ((hashFunc(name) % symbolTable -> size));
 	while(strcmp(symbolTable -> array[hash].name, "") != 0)
@@ -43,7 +43,7 @@ node getNode(char *name, symbolTable *symbolTable)
 }
 
 //Adicionar nós à linked list.
-void addNode(char *name, tipo type, char *nameFunc, symbolTable *symbolTable)
+void addNode(char *name, type *type, char *nameFunc, symbolTable *symbolTable)
 {
 	int hash = (hashFunc(nameFunc) % symbolTable -> size);
 	while(strcmp(symbolTable -> array[hash].name, nameFunc) != 0)
