@@ -2,6 +2,7 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include "structs.h"
+	#include "linked.h"
 
 	int yylex(void);
 	void yyerror(const char *);
@@ -24,6 +25,8 @@
 	struct argdefs *argdefs;
 	struct argdef *argdef;
 	struct exp *exp;
+	struct hashTable *symbolTable = initialize();
+
 }
 
 %token <integer>	INTEGER

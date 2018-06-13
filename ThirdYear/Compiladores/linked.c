@@ -1,27 +1,39 @@
 #include "linked.h"
 
-//Cria 
+//djb2
+unsigned long hashFunc(char *str)
+{
+    unsigned long hash = 5381;
+    int c;
+
+    while((c = *str++))
+    {
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+    }
+
+    return hash;
+}
+
+//Cria o primeiro nó da linked list na hashtable.
 void createNode(char *name, tipo type, symbolTable *symbolTable)
 {
-	int hash = (hash(name) % symbolTable -> size);
-	while(symbolTable -> array[hash] != NULL)
+	int hash = ((hashFunc(name) % symbolTable -> size));
+	while(strcmp(symbolTable -> array[hash].name, "") != 0)
 	{
 		hash++;
 		hash %= symbolTable -> size;
 	}
 
-	symbolTable -> array[hash] = malloc(sizeof(node));
-
-	strcy(symbolTable -> array[hash] -> name, name);
-	symbolTable -> array[hash] -> type = type;
-	symbolTable -> array[hash] -> next = NULL;
+	strcpy(symbolTable -> array[hash].name, name);
+	symbolTable -> array[hash].type = type;
+	symbolTable -> array[hash].next = NULL;
 }
 
 //Pesquisa pela linked list referente a cada função.
-node *getNode(char *name, symbolTable *symbolTable)
+node getNode(char *name, symbolTable *symbolTable)
 {
-	int hash = (hash(name) % symbolTable -> size);
-	while(symbolTable -> array[hash] != NULL && strcmp(symbolTable -> array[hash] -> name, name) != 0)
+	int hash = (hashFunc(name) % symbolTable -> size);
+	while(strcmp(symbolTable -> array[hash].name, name) != 0)
 	{
 		hash++;
 		hash %= symbolTable -> size;
@@ -30,28 +42,30 @@ node *getNode(char *name, symbolTable *symbolTable)
 	return symbolTable -> array[hash];
 }
 
+//Adicionar nós à linked list.
 void addNode(char *name, tipo type, char *nameFunc, symbolTable *symbolTable)
 {
-	int hash = (hash(nameFunc) % symbolTable -> size);
-	while(symbolTable -> array[hash] != NULL && strcmp(symbolTable -> array[hash] -> name, nameFunc) != 0)
+	int hash = (hashFunc(nameFunc) % symbolTable -> size);
+	while(strcmp(symbolTable -> array[hash].name, nameFunc) != 0)
 	{
 		hash++;
 		hash %= symbolTable -> size;
 	}
 
-	node *nextTemp = symbolTable -> array[hash] -> next;
+	node *nextTemp = symbolTable -> array[hash].next;
 
 	while(nextTemp != NULL)
 	{
 		nextTemp = nextTemp -> next;
 	}
 
-	nextTemp = malloc(sizeof(nextTemp));
-	nextTemp -> name = name;
+	nextTemp = malloc(sizeof(node));
+	nextTemp -> name = strcpy(symbolTable -> array[hash].name, name);
 	nextTemp -> type = type;
 	nextTemp -> next = NULL;
 }
 
+//Inicializa a hash table.
 symbolTable *initialize()
 {
 	symbolTable *symbolTable = malloc(sizeof(symbolTable));
@@ -59,16 +73,11 @@ symbolTable *initialize()
 	symbolTable -> size = 1009;
 	symbolTable -> array = calloc(1009, sizeof(node));
 
+	for(int i = 0; i < symbolTable -> size; i++)
+	{
+		symbolTable -> array[i].name = "";
+
+	}
+
 	return symbolTable;
-}
-
-unsigned long hash(unsigned char *str)
-{
-    unsigned long hash = 5381;
-    int c;
-
-    while (c = *str++)
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
-    return hash;
 }
