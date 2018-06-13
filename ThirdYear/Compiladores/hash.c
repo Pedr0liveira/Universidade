@@ -31,3 +31,26 @@ node *get(char *name, symbolTable *newSymbolTable)
 
 	return new_;
 }
+
+/*
+unsigned long
+hash(unsigned char *str)
+{
+    unsigned long hash = 5381;
+    int c;
+
+    while (c = *str++)
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+/*
+    return hash;
+}
+*/
+
+/* OU
+hashAddress = 5381;
+for (counter = 0; word[counter]!='\0'; counter++)
+{
+    hashAddress = ((hashAddress << 5) + hashAddress) + word[counter];
+}
+
+/*
