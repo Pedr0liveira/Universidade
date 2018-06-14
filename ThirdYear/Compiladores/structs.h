@@ -3,23 +3,29 @@
 #include <stdlib.h>
 
 typedef enum declsKind {decl_, declDecls_} declsKind;
-typedef enum declKind {declNoArgs_, declExp_, declStms_, declArgdef_, declDefine_} declKind;
-typedef enum typeKind {int_, float_, string_, bool_, void_, typeExp_} typeKind;
+typedef enum declKind {declNoArgs_, declExp_, declStm_, declArgdef_, declDefine_} declKind;
+typedef enum typeKind {int_ = 0, float_, string_, bool_, void_, typeExp_} typeKind;
 typedef enum idsKind {idsId_, idsIdIds_} idsKind;
-typedef enum stmsKind {stmsDecls_, stmsIdExp_, stmsIf_, stmsIfElse_, stmsWhile_, stmsReturn_, stmsNext_, stmsBreak_, stmsPrintIds_, stmsPrintString_, stmsPrintExp_, stmsInput_} stmsKind;
-typedef enum argdefsKind {argdef_, argdefs_} argdefsKind;
-typedef enum expKind {expID_, expInt_, expFloater_, expString_, expBool_, expSum_, expSub_, expMul_, expDiv_, expPow_, expMod_, expAnd_, expOr_, expEquals_, expNotEqu_, expLess_, expBigger_, expLessEqu_, expBiggerEqu_, expNot_, expNeg_, expPar_, expAssign_} expKind;
+typedef enum stmKind {stmAssign_, stmDecls_, stmIdExp_, stmIf_, stmIfElse_, stmWhile_, stmReturn_, stmNext_, stmBreak_, stmPrintIds_, stmPrintString_, stmPrintExp_, stmInput_} stmKind;
+typedef enum argdefsKind {argdef_=1, argdefs_=2} argdefsKind;
+typedef enum expKind {try_, expID_, expInt_, expFloater_, expString_, expBool_, expSum_, expSub_, expMul_, expDiv_, expPow_, expMod_, expAnd_, expOr_, expEquals_, expNotEqu_, expLess_, expBigger_, expLessEqu_, expBiggerEqu_, expNot_, expNeg_, expPar_} expKind;
 
 typedef struct program program;
 typedef struct decls decls;
 typedef struct decl decl;
 typedef struct type type;
 typedef struct ids ids;
-typedef struct stms stms;
+typedef struct stm stm;
 typedef struct argdefs argdefs;
 typedef struct argdef argdef;
 typedef struct exp exp;
+typedef struct stms stms;
 
+struct stms
+{
+	stm *stm;
+	stms *stms;
+};
 
 struct program
 {
@@ -78,9 +84,9 @@ struct ids
 	ids *id;
 };
 
-struct stms
+struct stm
 {
-	stmsKind kind;
+	stmKind kind;
 
 	union
 	{
@@ -139,7 +145,7 @@ decls *newDeclDecls(declsKind kind, decl *declaration, decls *declarations);
 //funções para definição de declarações.
 decl *newDeclType(declKind kind, ids *id, type *types);
 decl *newDeclExp(declKind kind, ids *id, type *types, exp *expression);
-decl *newDeclStms(declKind kind, char *identifier, type *types, stms *statements1);
+decl *newDeclStm(declKind kind, char *identifier, type *types, stms *statements1);
 decl *newDeclArgdefs(declKind kind, char *identifier, argdefs *argDefines, type *types, stms *statements2);
 decl *newDeclDefine(declKind kind, char *identifier, type *types);
 
@@ -151,18 +157,19 @@ type *newTypeExp(typeKind kind, type *types, exp *expression);
 ids *newId(idsKind kind, char *identifier);
 ids *newIdIds(idsKind kind, char *identifier, ids *id);
 
-//funções para statements.
-stms *stmsDecls(stmsKind kind, decls *declarations);
-stms *stmsIdExp(stmsKind kind, char *identifier, exp *expression2);
-stms *stmsIf(stmsKind kind, exp *expression1, stms *statements1);
-stms *stmsIfElse(stmsKind kind, exp *expression1, stms *statements1, stms *statements2);
-stms *stmsWhile(stmsKind kind, exp *expression1, stms *statements1);
-stms *stmsReturn(stmsKind kind, exp *expression1);
-stms *stmsSingle(stmsKind kind);
-stms *stmsPrintIds(stmsKind kind, ids *id);
-stms *stmsPrintString(stmsKind kind, char *string);
-stms *stmsPrintExp(stmsKind kind, exp *expression1);
-stms *stmsInput(stmsKind kind, char *identifier);
+//funções para statement.
+stm *stmDecls(stmKind kind, decls *declarations);
+stm *stmIdExp(stmKind kind, char *identifier, exp *expression2);
+stm *stmIf(stmKind kind, exp *expression1, stms *statements1);
+stm *stmIfElse(stmKind kind, exp *expression1, stms *statements1, stms *statements2);
+stm *stmWhile(stmKind kind, exp *expression1, stms *statements1);
+stm *stmReturn(stmKind kind, exp *expression1);
+stm *stmSingle(stmKind kind);
+stm *stmPrintIds(stmKind kind, ids *id);
+stm *stmPrintString(stmKind kind, char *string);
+stm *stmPrintExp(stmKind kind, exp *expression1);
+stm *stmInput(stmKind kind, char *identifier);
+stm *stmAssign(stmKind kind, char *identifier, exp *expression2);
 
 //função para várias definições de argumentos.
 argdefs *argdefsArgdef(argdefsKind kind, argdef *argDefine);
@@ -179,4 +186,9 @@ exp *expString(expKind kind, char *identifier);
 exp *expBool(expKind kind, int boolean);
 exp *expOp(expKind kind, exp *expression1, exp *expression2);
 exp *expSingle(expKind kind, exp *expression1);
-exp *expAssign(expKind kind, char *identifier, exp *expression2);
+
+exp *expTry(expKind kind, char *identifier, exp *expression2);
+
+//funções para stms
+stms *stmsStmStms(stm *stm, stms *stms);
+stms *stmsStm(stm *stm);

@@ -22,10 +22,11 @@
 	struct decl *decl;
 	struct type *type;
 	struct ids *ids;
-	struct stms *stms;
+	struct stm *stm;
 	struct argdefs *argdefs;
 	struct argdef *argdef;
 	struct exp *exp;
+	struct stms *stms;
 
 }
 
@@ -61,24 +62,25 @@
 %type <decl> decl;
 %type <type> type;
 %type <ids> ids;
-%type <stms> stms;
+%type <stm> stm;
 %type <argdefs> argdefs;
 %type <argdef> argdef;
 %type <exp> exp;
+%type <stms> stms;
 
 %%
 
-program:	decls 			{st = newST(); newProgram($1, st); }
+program:	decls 			{newProgram($1, st); }
 			;
 
 decls:		decl			{$$ = newDecls(decl_, $1); }
-		|	decl decls		{$$ = newDeclDecls(declDecls_, $1, $2); }
+		|	decls decl		{$$ = newDeclDecls(declDecls_, $2, $1); }
 			;
 
 decl: 		ids DPOINTS type SEMI		{$$ = newDeclType(declNoArgs_, $1, $3); createNodeIds($1, $3, st); }
 		|	ids DPOINTS	type ASSIGN exp SEMI	{$$ = newDeclExp(declExp_, $1, $3, $5); createNodeIds($1, $3, st); }
-		|	ID LPAR RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclStms(declStms_, $1, $5, $7); createNode( $1, $5, st); strcpy(lastFunc, $1); }
-		|	ID LPAR argdefs RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{$$ = newDeclArgdefs(declArgdef_, $1, $3, $6, $8); createNode($1, $6, st); strcpy(lastFunc, $1); }
+		|	ID LPAR RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{lastFunc = strdup($1); $$ = newDeclStm(declStm_, $1, $5, $7); createNode( $1, $5, st); }
+		|	ID LPAR argdefs RPAR DPOINTS type LCBRACE stms RCBRACE SEMI		{ $$ = newDeclArgdefs(declArgdef_, $1, $3, $6, $8); createNodeArgdefs($3, $6, st, $1); }
 		|	DEFINE ID type	SEMI	{$$ = newDeclDefine(declDefine_, $2, $3); createNode($2, $3, st); }
 			;
 
@@ -94,25 +96,28 @@ ids:		ID 		{$$ = newId(idsId_, $1); }
 		|	ID COMMA ids 	{$$ = newIdIds(idsIdIds_, $1, $3); }
 			;
 
-stms:		decls 			{$$ = stmsDecls(stmsDecls_, $1); }
-		|	ID exp SEMI		{$$ = stmsIdExp(stmsIdExp_, $1, $2); }
-		|	IF exp THEN LCBRACE stms RCBRACE SEMI		{$$ = stmsIf(stmsIf_, $2, $5); }
-		|	IF exp THEN LCBRACE stms RCBRACE ELSE LCBRACE stms RCBRACE SEMI		{$$ = stmsIfElse(stmsIfElse_, $2, $5, $9); }
-		|	WHILE exp DO LCBRACE stms RCBRACE SEMI		{$$ = stmsWhile(stmsWhile_, $2, $5); }
-		|	RETURN exp SEMI		{$$ = stmsReturn(stmsReturn_, $2); }
-		|	NEXT SEMI		{$$ = stmsSingle(stmsNext_); }
-		|	BREAK SEMI		{$$ = stmsSingle(stmsBreak_); }
-		|	PRINT LPAR ids RPAR SEMI		{$$ = stmsPrintIds(stmsPrintIds_, $3); }
-		|	PRINT LPAR LSTRING RPAR SEMI		{$$ = stmsPrintString(stmsPrintString_, $3); }
-		|	PRINT LPAR exp RPAR SEMI		{$$ = stmsPrintExp(stmsPrintExp_, $3); }
-		|	INPUT LPAR ID RPAR SEMI			{$$ = stmsInput(stmsInput_, $3); }
+stms:		stm stms 		{$$ = stmsStmStms($1, $2); }
+		|	stm 			{$$ = stmsStm($1); }
+		;
+
+stm:		decls 			{$$ = stmDecls(stmDecls_, $1); }
+		|	ID exp SEMI		{$$ = stmIdExp(stmIdExp_, $1, $2); }
+		|	IF exp THEN LCBRACE stms RCBRACE SEMI		{$$ = stmIf(stmIf_, $2, $5); }
+		|	IF exp THEN LCBRACE stms RCBRACE ELSE LCBRACE stms RCBRACE SEMI		{$$ = stmIfElse(stmIfElse_, $2, $5, $9); }
+		|	WHILE exp DO LCBRACE stms RCBRACE SEMI		{$$ = stmWhile(stmWhile_, $2, $5); }
+		|	RETURN exp SEMI		{$$ = stmReturn(stmReturn_, $2); }
+		|	NEXT SEMI		{$$ = stmSingle(stmNext_); }
+		|	BREAK SEMI		{$$ = stmSingle(stmBreak_); }
+		|	PRINT LPAR exp RPAR SEMI		{$$ = stmPrintExp(stmPrintExp_, $3); }
+		|	INPUT LPAR ID RPAR SEMI			{$$ = stmInput(stmInput_, $3); }
+		|	ID ASSIGN exp SEMI 			{$$ = stmAssign(stmAssign_, $1, $3); }
 			;
 
 argdefs:	argdef 					{$$ = argdefsArgdef(argdef_, $1); }
 		|	argdef COMMA argdefs 	{$$ = argdefsArgdefs(argdefs_,  $1, $3); }
 			;
 
-argdef:		ID DPOINTS type 		{$$ = newArgdef($1, $3); addNode($1, $3, lastFunc, st); }
+argdef:		ID DPOINTS type 		{$$ = newArgdef($1, $3); }
 			;
 
 exp:		ID 					{$$ = expID(expID_, $1); }
@@ -143,8 +148,9 @@ exp:		ID 					{$$ = expID(expID_, $1); }
 		|	SUB exp 			{$$ = expSingle(expNeg_, $2); }
 
 		|	LPAR exp RPAR 		{$$ = expSingle(expPar_, $2); }
-		|	ID ASSIGN exp		{$$ = expAssign(expAssign_, $1, $3); }
+		|	ID LPAR exp RPAR	{$$ = expTry(try_, $1, $3); }
 			;
+		
 
 %%
 
@@ -157,5 +163,7 @@ void yyerror(const char *msg)
 
 int main(void)
 {
+	st = newST();
+	lastFunc = "";
 	return yyparse();
 }

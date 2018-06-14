@@ -1,7 +1,7 @@
 a : int = 0;
 b : string = "ola";
 
-f (b: int) : void {
+f (b : int) : void {
   print(b);
 };
 

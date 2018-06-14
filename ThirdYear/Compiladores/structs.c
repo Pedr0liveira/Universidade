@@ -46,7 +46,7 @@ decl *newDeclExp(declKind kind, ids *id, type *types, exp *expression)
 	return new_;
 }
 
-decl *newDeclStms(declKind kind, char *identifier, type *types, stms *statements1)
+decl *newDeclStm(declKind kind, char *identifier, type *types, stms *statements1)
 {
 	decl *new_ = malloc(sizeof(decl));
 
@@ -110,6 +110,7 @@ ids *newId(idsKind kind, char *identifier)
 
 	new_ -> kind = kind;
 	new_ -> identifier = strdup(identifier);
+	new_ -> id = NULL;
 
 	return new_;
 }
@@ -125,10 +126,10 @@ ids *newIdIds(idsKind kind, char *identifier, ids *id)
 	return new_;
 }
 
-//funções para statements.
-stms *stmsDecls(stmsKind kind, decls *declarations)
+//funções para statement.
+stm *stmDecls(stmKind kind, decls *declarations)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind;
 	new_ -> u1.declarations = declarations;
@@ -136,9 +137,9 @@ stms *stmsDecls(stmsKind kind, decls *declarations)
 	return new_;
 }
 
-stms *stmsIdExp(stmsKind kind, char *identifier, exp *expression2)
+stm *stmIdExp(stmKind kind, char *identifier, exp *expression2)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind;
 	new_ -> u1.identifier = identifier;
@@ -147,9 +148,9 @@ stms *stmsIdExp(stmsKind kind, char *identifier, exp *expression2)
 	return new_;
 }
 
-stms *stmsIf(stmsKind kind, exp *expression1, stms *statements1)
+stm *stmIf(stmKind kind, exp *expression1, stms *statements1)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind;
 	new_ -> u1.expression1 = expression1;
@@ -158,9 +159,9 @@ stms *stmsIf(stmsKind kind, exp *expression1, stms *statements1)
 	return new_;
 }
 
-stms *stmsIfElse(stmsKind kind, exp *expression1, stms *statements1, stms *statements2)
+stm *stmIfElse(stmKind kind, exp *expression1, stms *statements1, stms *statements2)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind;
 	new_ -> u1.expression1 = expression1;
@@ -170,9 +171,9 @@ stms *stmsIfElse(stmsKind kind, exp *expression1, stms *statements1, stms *state
 	return new_;
 }
 
-stms *stmsWhile(stmsKind kind, exp *expression1, stms *statements1)
+stm *stmWhile(stmKind kind, exp *expression1, stms *statements1)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind;
 	new_ -> u1.expression1 = expression1;
@@ -181,9 +182,9 @@ stms *stmsWhile(stmsKind kind, exp *expression1, stms *statements1)
 	return new_;
 }
 
-stms *stmsReturn(stmsKind kind, exp *expression1)
+stm *stmReturn(stmKind kind, exp *expression1)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind;
 	new_ -> u1.expression1 = expression1;
@@ -191,18 +192,18 @@ stms *stmsReturn(stmsKind kind, exp *expression1)
 	return new_;
 }
 
-stms *stmsSingle(stmsKind kind)
+stm *stmSingle(stmKind kind)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind;
 
 	return new_;
 }
 
-stms *stmsPrintIds(stmsKind kind, ids *id)
+stm *stmPrintIds(stmKind kind, ids *id)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind;
 	new_ -> u1.id = id;
@@ -210,9 +211,9 @@ stms *stmsPrintIds(stmsKind kind, ids *id)
 	return new_;
 }
 
-stms *stmsPrintString(stmsKind kind, char *string)
+stm *stmPrintString(stmKind kind, char *string)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind;
 	new_ -> u1.string = strdup(string);
@@ -220,9 +221,9 @@ stms *stmsPrintString(stmsKind kind, char *string)
 	return new_;
 }
 
-stms *stmsPrintExp(stmsKind kind, exp *expression1)
+stm *stmPrintExp(stmKind kind, exp *expression1)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind;
 	new_ -> u1.expression1 = expression1;
@@ -230,9 +231,9 @@ stms *stmsPrintExp(stmsKind kind, exp *expression1)
 	return new_;
 }
 
-stms *stmsInput(stmsKind kind, char *identifier)
+stm *stmInput(stmKind kind, char *identifier)
 {
-	stms *new_ = malloc(sizeof(stms));
+	stm *new_ = malloc(sizeof(stm));
 
 	new_ -> kind = kind; 
 	new_ -> u1.identifier = strdup(identifier);
@@ -247,6 +248,7 @@ argdefs *argdefsArgdef(argdefsKind kind, argdef *argDefine)
 
 	new_ -> kind = kind;
 	new_ -> argDefine = argDefine;
+	new_ -> argDefines = NULL;
 
 	return new_;
 }
@@ -345,11 +347,40 @@ exp *expSingle(expKind kind, exp *expression1)
 	return new_;
 }
 
-exp *expAssign(expKind kind, char *identifier, exp *expression2)
+stm *stmAssign(stmKind kind, char *identifier, exp *expression2)
+{
+	stm *new_ = malloc(sizeof(stm));
+
+	new_ -> kind = kind;
+	new_ -> u1.identifier = strdup(identifier);
+	new_ -> u2.expression2 = expression2;
+
+	return new_;
+}
+
+stms *stmsStmStms(stm *stm, stms *stms)
+{
+	struct stms *new_ = malloc(sizeof(stms));
+
+	new_ -> stm = stm;
+	new_ -> stms = stms;
+
+	return new_;
+}
+
+stms *stmsStm(stm *stm)
+{
+	stms *new_ = malloc(sizeof(stms));
+
+	new_ -> stm = stm;
+
+	return new_;
+}
+
+exp *expTry(expKind kind, char *identifier, exp *expression2)
 {
 	exp *new_ = malloc(sizeof(exp));
 
-	new_ -> kind = kind;
 	new_ -> u1.identifier = strdup(identifier);
 	new_ -> expression2 = expression2;
 
